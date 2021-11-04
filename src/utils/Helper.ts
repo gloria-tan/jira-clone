@@ -1,16 +1,17 @@
+import { Parameters } from "models/Model";
 
 export const isTrue = (value: any): boolean => value === 0 ? true : !!value;
 
-export const cleanObject = (object: object): object => {
+export const cleanObject = (source: Parameters): object => {
     // Object.assign({}, object);
-    let result: object = {...object};
-    Object.keys(result).forEach( (key) => {
+    const cleaned = {...source};
+    Object.keys(cleaned).forEach( (key) => {
         // 0
-        const value = result[key];
+        const value = cleaned[key];
         if (!isTrue(value)) {
-            delete result[key];
+            delete cleaned[key];
         }
     });
 
-    return result;
+    return cleaned;
 };

@@ -1,5 +1,11 @@
+import {Project, ProjectOwner} from "models/Model";
 
-export const ProjectList = ({projects: Project[], owners: ProjectOwner[]}) => {
+interface ProjectListProps {
+    projects: Project[],
+    owners: ProjectOwner[]
+}
+
+export const ProjectList = ({projects, owners}: ProjectListProps): JSX.Element => {
     return (
         <table>
             <thead>
@@ -9,11 +15,11 @@ export const ProjectList = ({projects: Project[], owners: ProjectOwner[]}) => {
                 </tr>
             </thead>
             <tbody>
-                { projects && projects.map(project => {
+                { projects.map(project => { return (
                     <tr key={project.id}>
                         <td>{project.name}</td>
-                        <td>owners.find( (owner) => owner.id === project.personId?.name || 未知</td>
-                    </tr>
+                        <td>{owners.find( (owner) => owner.id === project.personId)?.name || '未知'}</td>
+                    </tr>);
                 }) }
             </tbody>
         </table>

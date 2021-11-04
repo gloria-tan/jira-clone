@@ -1,8 +1,12 @@
-import { useEffect, useState } from "react";
+import { SearchParameter, ProjectOwner } from "models/Model";
 
+interface ProjectSearchPanelProps {
+    param: SearchParameter;
+    owners: ProjectOwner[];
+    setParam: (param: ProjectSearchPanelProps['param']) => void;
+}
 
-
-export const ProjectSearchPanel = ({param, setParam, owners: ProjectOwner[]}) => {
+export const ProjectSearchPanel = ({param, setParam, owners}: ProjectSearchPanelProps): JSX.Element => {
 
     return (
         <div>
@@ -19,7 +23,7 @@ export const ProjectSearchPanel = ({param, setParam, owners: ProjectOwner[]}) =>
                 })}}>
                     <option value="">负责人</option>
                     { owners.map(owner => (
-                        <option value="owner.id" key={owner.id}>owner.name</option>
+                        <option value={owner.id} key={owner.id}>{owner.name}</option>
                     ))}
                 </select>
             </form>
