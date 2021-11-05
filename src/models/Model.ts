@@ -21,4 +21,20 @@ export type Parameters = { [key: string]: unknown };
 export interface Person {
     name: string;
     age: number;
+};
+
+export type LoginCombination = {
+    email: string;
+    password: string;
+};
+
+export type AuthCredential = {
+    email: string;
+    token: string;
+};
+
+export interface AuthProvider {
+    credential: AuthCredential | null ;
+    login: ({email, password}: LoginCombination) => Promise<void>;
+    logout: () => Promise<boolean>;
 }

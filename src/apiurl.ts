@@ -2,6 +2,6 @@
 // Based on the root
 // Will build the path like $HOST/$API
 export const API_URLS = {
-    login: `login`,
-    logout: `logout`
+    login: `auth/login`,
+    logout: `auth/logout`
 }
