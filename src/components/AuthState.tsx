@@ -72,7 +72,7 @@ export const AuthState = ({children}: {children: ReactNode}) => {
     );
 }
 
-export const useAuthState = (): AuthProvider | undefined => {
+export const useAuthState = (): AuthProvider => {
     const state = React.useContext(AuthContext);
     if ( !state ) {
         throw new Error("Auth Context should used in AuthProvide ");

@@ -16,7 +16,7 @@ export type SearchParameter = {
     personId: string; 
 };
 
-export type Parameters = { [key: string]: unknown };
+export type StringObject = { [key: string]: unknown };
 
 export interface Person {
     name: string;
