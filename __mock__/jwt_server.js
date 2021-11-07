@@ -62,7 +62,7 @@ server.use(/^(?!\/auth).*$/, (req, res, next) => {
 });
 
 server.use(router);
-server.listen(3000, () => {
-    console.log('Running jwt json server');
+server.listen(10010, () => {
+    console.log('Running jwt json server on 10010');
 })
 

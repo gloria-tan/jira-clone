@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Parameters, Person } from "models/Model";
+import { Person, SearchParameter } from "models/Model";
 
 export const useMount = (callback: ()=> void) => {
     useEffect( () => {
@@ -7,8 +7,7 @@ export const useMount = (callback: ()=> void) => {
     }, []);
 };
 
-export const useDebounce = (value: Parameters, delay: number): Parameters => {
-
+export const useDebounce = (value: SearchParameter, delay: number): SearchParameter => {
     const [debouncedValue, setDebouncedValue] = useState(value);
 
     useEffect( () => {

@@ -1,5 +1,6 @@
 import { useAuthState } from "components/AuthState";
 import { StringObject } from "models/Model";
+import { hasUncaughtExceptionCaptureCallback } from "process";
 import * as qs from "qs";
 import { cleanObject } from "utils/Helper";
 
@@ -16,7 +17,7 @@ export const secureFetch = (endpoint: string, {data, token, headers, ...config }
         method: "GET",
         headers: {
             "Content-Type": data ? "application/json" : "",
-            "Authorization": token ? `Bear ${token}` : "",
+            "Authorization": token ? `Bearer ${token}` : "",
             ...headers
         },
         ...config
@@ -35,7 +36,30 @@ export const useHttp = () => {
     const authState = useAuthState();
 
     const credential = authState?.credential;
-    const token = credential?.token || ""
+    const token = credential?.token;
 
-    return secureFetch()
+    const logout = authState?.logout ;
+
+    return (...[endpoint, config]: Parameters<typeof secureFetch>) => {
+        return secureFetch(endpoint, {
+            token,
+            ...config
+        })
+        .then(rsp => {
+            if ( rsp.status === 401 ) {
+                console.log(`${endpoint} access rejected.`);
+                if (logout) {
+                    logout();
+                }
+                return Promise.reject(new Error("Auth needed"));
+            }
+
+            if (rsp.ok) {
+                return rsp.json();
+            } else {
+                console.log(`${endpoint} returns a wrong response`);
+                return Promise.reject(new Error("Wrong response"));
+            }
+        });
+    };
 };

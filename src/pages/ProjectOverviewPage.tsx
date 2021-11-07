@@ -5,9 +5,11 @@ import { cleanObject } from "utils/Helper";
 import qs from "qs";
 import { useDebounce } from "hooks/SuperHooks";
 import { Project, ProjectOwner } from "models/Model";
+import { useHttp } from 'hooks/useHttp';
+import { API_URLS } from 'apiurl';
 
 export const ProjectOverviewPage = () => {
-    const apiUrl = process.env.REACT_APP_API_URL;
+    const secureFetch = useHttp();
 
     // Search options
     const [searchParam, setSearchParam] = useState({
@@ -24,36 +26,20 @@ export const ProjectOverviewPage = () => {
     const [availableProjects, setAvailableProjects] = useState<Project[]>([]);
     
     useEffect( () => {
-        fetch(`${apiUrl}/projects?${qs.stringify(cleanObject(debouncedParam))}`)
-        .then( rsp => {
-            if (rsp.ok) {
-                return rsp.json();
-            } else {
-                return Promise.reject(new Error("Get projects failed"));
-            }
-        })
+        secureFetch(API_URLS.projects, {data: debouncedParam})
         .then( projects => setAvailableProjects(projects))
         .catch( err => {
-            console.log(`Èrror happend while getting projects ${err}`)
+            console.log(`Èrror happend while getting projects ${err}`);
         });
 
     }, [debouncedParam]);
 
     useEffect( () => {
-        fetch(`${apiUrl}/users`)
-            .then( rsp => {
-                if (rsp.ok) {
-                    return rsp.json();
-                } else {
-                    return Promise.reject(new Error("Get users failed"));
-                }
-            })
-            .then( data => {
-                setProjectOwners(data);
-            })
-            .catch( err => {
-                console.log(`Get users failed, error is ${err}`);
-            })
+        secureFetch(API_URLS.users)
+        .then( users => setProjectOwners(users))
+        .catch( err => {
+            console.log(`Èrror happend while getting users ${err}`);
+        });
     }, []);
 
     return (

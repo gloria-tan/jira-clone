@@ -31,10 +31,10 @@ export const AuthState = ({children}: {children: ReactNode}) => {
                 })
                 .then( json => {
                     // login success
-                    console.log(`Received token: ${json}`);
+                    console.log(`Received token: ${JSON.stringify(json)}`);
                     const newCrediential: AuthCredential = {
                         email,
-                        token: json.token as string
+                        token: json["access_token"] as string
                     }
                     setCredential(newCrediential);
                 });
