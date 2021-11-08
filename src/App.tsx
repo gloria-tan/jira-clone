@@ -4,6 +4,7 @@ import './App.css';
 import { ProjectOverviewPage } from 'pages/ProjectOverviewPage';
 import { LoginPage } from 'pages/LoginPage';
 import { useAuthState } from 'components/AuthState';
+import { CssBaseline } from '@material-ui/core';
 
 function App() {
 
@@ -13,6 +14,8 @@ function App() {
 
   return (
     <div className="App">
+      <CssBaseline />
+      
       { email && (
         <div>
           Welcome {email}!

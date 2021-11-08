@@ -1,8 +1,19 @@
+import { Card } from "@material-ui/core";
+import { makeStyles } from "@material-ui/styles";
 import { API_URLS } from "apiurl";
 import { useAuthState } from "components/AuthState";
 import { FormEvent, useState } from "react";
 
+const useStyles = makeStyles({
+    root: {
+        "width": "600px",
+        margin: "10px auto"
+    }
+});
+
 export const LoginPage = () => {
+
+    const classes = useStyles();
 
     const authState = useAuthState();
     const credential = authState?.credential || null;
@@ -27,6 +38,7 @@ export const LoginPage = () => {
     }
 
     return (
+        <Card className={classes.root} raised={true}>
         <form onSubmit={ onLogin }>
             <label htmlFor="email">Email</label>
             <input type="text" id="email" />
@@ -46,5 +58,6 @@ export const LoginPage = () => {
             )}
             <button type="submit">Login</button>
         </form>
+        </Card>
     );
 }
