@@ -35,6 +35,7 @@ export type AuthCredential = {
 
 export interface AuthProvider {
     credential: AuthCredential | null ;
-    login: ({email, password}: LoginCombination) => Promise<void>;
-    logout: () => Promise<boolean>;
+    errorMessage: string | null;
+    login: ({email, password}: LoginCombination) => Promise<boolean>;
+    logout: (noHttpCall: boolean) => Promise<boolean>;
 }

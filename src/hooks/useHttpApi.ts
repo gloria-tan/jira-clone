@@ -32,7 +32,7 @@ export const secureFetch = (endpoint: string, {data, token, headers, ...config }
     return window.fetch(`${BASE_URL}/${api}`, defaultConfig);
 }
 
-export const useHttp = () => {
+export const useHttpApi = () => {
     const authState = useAuthState();
 
     const credential = authState?.credential;
@@ -49,16 +49,16 @@ export const useHttp = () => {
             if ( rsp.status === 401 ) {
                 console.log(`${endpoint} access rejected.`);
                 if (logout) {
-                    logout();
+                    logout(true);
                 }
-                return Promise.reject(new Error("Auth needed"));
+                return Promise.reject(new Error("Authorization is needed"));
             }
 
             if (rsp.ok) {
                 return rsp.json();
             } else {
-                console.log(`${endpoint} returns a wrong response`);
-                return Promise.reject(new Error("Wrong response"));
+                console.log(`${endpoint} returns a wrong response, code is ${rsp.status}`);
+                return Promise.reject(new Error(`${endpoint} API calls failed.`));
             }
         });
     };

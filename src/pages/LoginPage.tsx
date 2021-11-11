@@ -1,13 +1,22 @@
-import { Card } from "@material-ui/core";
+import { Card, Typography, Button, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
-import { API_URLS } from "apiurl";
 import { useAuthState } from "components/AuthState";
 import { FormEvent, useState } from "react";
+import logo from "resources/image/logo.svg";
 
 const useStyles = makeStyles({
     root: {
         "width": "600px",
-        margin: "10px auto"
+        margin: "3rem auto",
+        minHeight: "38rem",
+
+        "& > form": {
+            padding: "5px 20px"
+        }
+    },
+
+    textInput: {
+        marginBottom: "30px"
     }
 });
 
@@ -16,34 +25,34 @@ export const LoginPage = () => {
     const classes = useStyles();
 
     const authState = useAuthState();
-    const credential = authState?.credential || null;
+    const credential = authState?.credential;
+    const errorMessage = authState?.errorMessage;
     const login = authState?.login;
     const logout = authState?.logout;
 
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
     const onLogin = (evt: FormEvent<HTMLFormElement>) => {
         evt.preventDefault();
-        setErrorMessage(null);
         const email = (evt.currentTarget.elements[0] as HTMLInputElement).value;
         const password = (evt.currentTarget.elements[1] as HTMLInputElement).value;
 
         if (login) {
             login({email, password})
+                .then( status => {
+                    console.log(`${email} Logging successfull`);
+                })
                 .catch( err => {
-                console.log(`Error happends ${err}`);
-                setErrorMessage(err.toString());
+                console.log(`Error happened while logging, error is ${err}`);
             });
         }
     }
 
     return (
-        <Card className={classes.root} raised={true}>
-        <form onSubmit={ onLogin }>
-            <label htmlFor="email">Email</label>
-            <input type="text" id="email" />
-            <label htmlFor="password">Password</label>
-            <input type="password" id="password"/>
+        <div>
+            <Card className={classes.root} raised={true}>
+            <Typography variant="h6">Login</Typography>
+            <form onSubmit={ onLogin }>
+                <TextField type="text" placeholder='Email' fullWidth inputProps={{ 'aria-label': 'email' }} />
+                <TextField type="password" placeholder='Password' fullWidth inputProps={{ 'aria-label': 'password'}} />
             { errorMessage && (
                 <div>
                     <p>Error!</p>
@@ -56,8 +65,11 @@ export const LoginPage = () => {
                     {JSON.stringify(credential.token)}
                 </div>
             )}
-            <button type="submit">Login</button>
-        </form>
-        </Card>
+
+            <Button variant="contained" type="submit" color="primary">Login</Button>
+
+            </form>
+            </Card>
+        </div>
     );
 }

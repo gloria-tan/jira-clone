@@ -1,69 +1,113 @@
 import { API_URLS } from "apiurl";
+import { secureFetch } from "hooks/useHttpApi";
 import { AuthProvider, LoginCombination, AuthCredential } from "models/Model";
-import React, { useState } from "react";
-import { ReactNode, useContext } from "react";
-
+import React, { useEffect, useState } from "react";
+import { ReactNode } from "react";
 
 const AuthContext = React.createContext<AuthProvider | undefined >(undefined);
 AuthContext.displayName = "Authencitation Context";
 
+const STORAGE_AUTH_TOKEN_EMAIL = 'AUTH_TOKEN_EMAIL';
+const STORAGE_AUTH_TOKEN_VALUE = 'AUTH_TOKEN_VALUE';
+
 export const AuthState = ({children}: {children: ReactNode}) => {
-    const [credential, setCredential] = useState<AuthCredential | null >(null);
+    const [credential, setCredential] = useState<AuthCredential | null>(null);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-    const BASE_URL = process.env.REACT_APP_API_URL 
- 
-    const login = ({email, password}: LoginCombination) => {
-        const loginUrl = BASE_URL + '/' + API_URLS.login;
+    const login = ({email, password}: LoginCombination): Promise<boolean> => {
+        const data = {
+            email,
+            password
+        };
 
-        return window.fetch(loginUrl, {
+        const apiConfig = {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({email, password} )
-        })
-                .then( rsp => {
-                    if (rsp.ok) {
-                        return rsp.json();
-                    } else {
-                        return Promise.reject(new Error("Receive a failed response."));
-                    }
-                })
-                .then( json => {
-                    // login success
-                    console.log(`Received token: ${JSON.stringify(json)}`);
-                    const newCrediential: AuthCredential = {
-                        email,
-                        token: json["access_token"] as string
-                    }
-                    setCredential(newCrediential);
-                });
-    };
+            data
+        };
 
-    const logout = (): Promise<boolean> => {
-        const logoutUrl = BASE_URL + '/' + API_URLS.logout;
-        return window.fetch(logoutUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                token: credential?.token || ''
+        setErrorMessage(null);
+        return secureFetch(API_URLS.login, apiConfig )
+            .then(rsp => {
+                if (rsp.ok) {
+                    return rsp.json();
+                } else {
+                    return Promise.reject(new Error(`Http request failed, code ${rsp.status}`));
+                }
             })
-        })
-        .then( rsp => {
-            if (rsp.ok) {
-                setCredential(null);
+            .then(json => {
+                const token = json.access_token;
+                if (token && token !== '') {
+                    setCredential({email, token});
+
+                    // Save to Local storage
+                    window.localStorage.setItem(STORAGE_AUTH_TOKEN_EMAIL, email);
+                    window.localStorage.setItem(STORAGE_AUTH_TOKEN_VALUE, token);
+
+                } else {
+                    setErrorMessage('Receive an empty token');
+                }
+
                 return Promise.resolve(true);
-            } else {
-                return Promise.reject(new Error("Post logout message failed"));
-            }
-        });
+            })
+            .catch( err => {
+                setErrorMessage(`Error happened while logging in, error message ${err.toString()}`);
+                return Promise.resolve(true);
+            });
     };
-    
+
+    const logout = (noHttpCall: boolean = false): Promise<boolean> => {
+        setErrorMessage(null);
+        
+        if (noHttpCall || credential === null || credential.token === null || credential.token === '') {
+            return Promise.resolve(noHttpCall)
+                .then(val => {
+                    setCredential(null);
+                    setErrorMessage(null);
+
+                    return Promise.resolve(true);
+                });
+        } else {
+            // Need call api
+            const token = credential.token;
+            const data = { };
+            const apiConfig = {
+                method: "POST",
+                data,
+
+            };
+            return secureFetch(API_URLS.logout, apiConfig)
+                .then( rsp => {
+                    if (!rsp.ok) {  
+                        console.log(`Logout function call failed, code ${rsp.status}`);
+                    }
+                    setCredential(null);
+                    setErrorMessage(null);
+
+                    return Promise.resolve(true);
+                })
+                .catch( err => {
+                    console.log(`Errors happened while logging out, error message ${err.toString()}`);
+                    return Promise.resolve(true);
+                });
+        }
+    };
+
+    // Load credential from local storage
+    useEffect( () => {
+        const storedEmail = window.localStorage.getItem(STORAGE_AUTH_TOKEN_EMAIL);
+        const storedValue = window.localStorage.getItem(STORAGE_AUTH_TOKEN_VALUE);
+        if ( storedEmail && storedValue ) {
+            setCredential( {
+                email: storedEmail,
+                token: storedValue
+            });
+        }
+    }, []);
+
     return (
         <AuthContext.Provider value={{
             credential,
+            errorMessage,
             login,
             logout
         }}>
