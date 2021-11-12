@@ -5,8 +5,12 @@ import { useDebounce } from "hooks/SuperHooks";
 import { Project, ProjectOwner } from "models/Model";
 import { useHttpApi } from 'hooks/useHttpApi';
 import { API_URLS } from 'apiurl';
+import { useTitle } from "hooks/useTitle";
 
 export const ProjectOverviewPage = () => {
+
+    // Set title
+    useTitle("Project Overview");
 
     // Search options
     const [searchParam, setSearchParam] = useState({

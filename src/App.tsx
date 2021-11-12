@@ -4,6 +4,7 @@ import { ProjectOverviewPage } from 'pages/ProjectOverviewPage';
 import { LoginPage } from 'pages/LoginPage';
 import { useAuthState } from 'components/AuthState';
 import { CssBaseline } from '@material-ui/core';
+import { AuthorizedPage } from 'pages/AuthorizedPage';
 
 function App() {
 
@@ -14,13 +15,7 @@ function App() {
   return (
     <div className="App">
       <CssBaseline />
-      
-      { email && (
-        <div>
-          Welcome {email}!
-          </div>
-      )}
-      { email ? <ProjectOverviewPage /> : <LoginPage /> }
+      { email ? <AuthorizedPage /> : <LoginPage /> }
     </div>
   );
 }
