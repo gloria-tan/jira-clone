@@ -6,6 +6,11 @@ import { Project, ProjectOwner } from "models/Model";
 import { useHttpApi } from 'hooks/useHttpApi';
 import { API_URLS } from 'apiurl';
 import { useTitle } from "hooks/useTitle";
+import { Container, Grid, makeStyles, Typography } from "@material-ui/core";
+
+const useStyles = makeStyles( () => {
+
+});
 
 export const ProjectOverviewPage = () => {
 
@@ -51,8 +56,11 @@ export const ProjectOverviewPage = () => {
 
     return (
         <div>
-            <ProjectSearchPanel param={searchParam} setParam={setSearchParam} owners={projectOwners}></ProjectSearchPanel>
-            <ProjectList projects={availableProjects} owners={projectOwners}></ProjectList>
+            <Container maxWidth="md">
+                <ProjectSearchPanel param={searchParam} setParam={setSearchParam} owners={projectOwners}></ProjectSearchPanel>
+                <ProjectList projects={availableProjects} owners={projectOwners}></ProjectList>
+            </Container>
+
         </div>
     );
 }
